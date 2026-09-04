@@ -1,0 +1,253 @@
+ROS2
+
+# Shut off auto-start 关闭自启
+sudo systemctl restart start_app_node.service
+# Start auto-start 启动自启
+sudo systemctl restart start_app_node.service
+# Shut down all ROS processes 关闭所有ROS的进程
+~/.stop_ros.sh
+
+# Handle control 手柄控制
+ros2 launch sdk jetarm_sdk.launch.py
+ros2 launch peripherals joystick.launch.py
+
+#####################Basic control of the robotic arm. 机械臂基础控制#####################
+# Control the servo 控制舵机
+#1. Control the steering gear through topics. 通过话题控制舵机
+ros2 launch sdk jetarm_sdk.launch.py
+ros2 topic list
+ros2 topic pub /ros_robot_controller/bus_servo/set_position ros_robot_controller_msgs/msg/ServosPosition '{"position": [{"id": 1, "position": 700}]}'
+#2. Use python file control. 使用python文件控制
+ros2 launch sdk jetarm_sdk.launch.py
+python3 ~/ros2_ws/src/example/example/simple/include/bus_servo_node.py
+#3. Launch file startup control 启动launch文件控制
+ros2 launch  example bus_servo.launch.py
+
+# Control LED 控制LED
+#1. Control the LED through topics. 通过话题控制LED
+ros2 launch sdk jetarm_sdk.launch.py
+ros2 topic list
+ros2 topic pub /ros_robot_controller/set_led ros_robot_controller_msgs/msg/LedState "{id: 1,on_time: 0.1,off_time: 0.2,repeat: 10}"
+#2 Use python file control. 使用python文件控制
+ros2 launch sdk jetarm_sdk.launch.py
+python3 ~/ros2_ws/src/example/example/simple/include/led_node.py
+#3 Launch file startup control 启动launch文件控制
+ros2 launch example led.launch.py
+
+# Buzzer Control 蜂鸣器控制
+#1. Buzzer control node 蜂鸣器控制节点
+ros2 launch sdk jetarm_sdk.launch.py
+ros2 topic list
+ros2 topic pub /ros_robot_controller/set_buzzer ros_robot_controller_msgs/msg/BuzzerState "{freq: 1900, on_time: 0.1,off_time: 0.2,repeat: 10}"
+#2. Use python file control. 使用python文件控制
+ros2 launch sdk jetarm_sdk.launch.py
+python3 ~/ros2_ws/src/example/example/simple/include/buzzer_node.py
+#3. Launch file startup control 启动launch文件控制
+ros2 launch example buzzer.launch.py
+
+# Robotic Arm PC 机械臂上位机
+cd arm_pc 
+python3 main.py 
+
+# Servo debug tool 舵机调试工具
+cd factory_utils/Bus_Servo_Tool
+python3 main.py
+
+#####################Advanced control of the robotic arm. 机械臂高级控制#####################
+# Forward Kinematics 正运动学
+#1. Invocation through service 通过服务调用
+ros2 launch sdk jetarm_sdk.launch.py
+ros2 service list
+ros2 service call /kinematics/set_joint_value_target kinematics_msgs/srv/SetJointValue "{joint_value: [500.0, 400.0, 300.0, 400.0, 500.0 ]}"
+#2. Launch file startup control 启动launch文件控制
+ros2 launch example fk.launch.py
+
+# Inverse kinematics 逆运动学
+#1. Invocation through service 通过服务调用
+ros2 launch sdk jetarm_sdk.launch.py
+ros2 service list
+ros2 service call /kinematics/set_pose_target kinematics_msgs/srv/SetRobotPose "{position: [0.35, 0.0, 0.24], pitch_range: [-180,180], pitch: 10, resolution: 1 }"
+#2. Launch file startup control 启动launch文件控制
+ros2 launch example ik.launch.py
+
+#####################ROS+OpenCV Courses. ROS+OpenCV课程#####################
+# Camera invocation 摄像头调用
+ros2 launch peripherals depth_camera.launch.py
+
+# Color threshold 颜色阈值
+ros2 launch example color_threshold.launch.py
+
+# Color space conversion 颜色空间转换
+ros2 launch example color_space.launch.py
+
+# Color recognition 颜色识别
+ros2 launch example color_recognition.launch.py
+
+# Pixel coordinate calculation 像素坐标计算
+ros2 launch example pixel_coordinate_calculation.launch.py
+
+# Object pose calculation 物体位姿计算
+ros2 launch example object_attitude_calculation.launch.py 
+
+# Coordinate system transformation 坐标系转换
+ros2 launch example coordinate_system_transformation.launch.py 
+
+# Trajectory planning 轨迹规划
+ros2 launch example path_planning.launch.py
+
+# Positioning and clamping 定位夹取
+ros2 launch example positioning_clamp.launch.py
+
+# Color sorting 颜色分拣
+ros2 launch example color_sortting_node.launch.py
+
+# Color block tracking 色块追踪
+ros2 launch example color_tracking.launch.py
+
+# Tag tracking 标签追踪
+ros2 launch example tag_track_node.launch.py
+
+# KCF item tracking KCF物品追踪
+ros2 launch example kcf_track_node.launch.py
+
+#####################Deep learning applications. 深度学习应用####################
+#Waste classification by robotic arm 机械臂垃圾分类
+ros2 launch example waste_classification.launch.py
+
+
+# Three-dimensional face detection 三维人脸检测
+ros2 launch example  face_mesh.launch.py
+
+# Mediapipe Face Tracking Mediapipe人脸追踪
+ros2 launch example face_tracking.launch.py
+
+# Mediapipe hand gesture interaction Mediapipe手势交互
+ros2 launch example hand_gesture.launch.py
+
+# Mediapipe finger trajectory Mediapipe指尖轨迹
+ros2 launch example finger_trajectory.launch.py
+
+
+#####################Application Course of Robotic Arm Depth Camera. 机械臂深度相机应用课程#####################
+# Pseudo-color processing of depth maps 深度图伪彩色处理
+ros2 launch example get_depth_rgb_img.launch.py
+
+# Distance measurement 距离测量
+ros2 launch example distance_measure.launch.py
+
+# Conversion of depth maps 深度图的转换
+ros2 launch example rgb_depth_to_pointcloud.launch.py
+
+# Height detection clamping 高度检测夹取
+ros2 launch example remove_too_high.launch.py 
+
+# Three-dimensional space grasping 三维空间抓取
+ros2 launch example track_and_grab.launch.py 
+
+# Three-dimensional shape sorting 三维形状分拣
+ros2 launch example shape_recognition.launch.py
+
+####################Voice control 语音控制####################
+# Start the microphone node 启动麦克风节点
+#xf
+ros2 launch xf_mic_asr_offline mic_init.launch.py enable_setting:=true
+
+#wonderechopro
+ros2 launch werechopro wonderechopro_init.launch.py 
+
+# Voice-controlled color sorting 语音控制颜色分拣
+ros2 launch xf_mic_asr_offline voice_control_color_sorting.launch.py
+
+# Voice-controlled color tracking 语音控制颜色追踪
+ros2 launch xf_mic_asr_offline voice_control_color_track.launch.py
+
+####################Large model 大模型####################
+####################online  在线大模型####################
+# Invocation of large language models 大语言模型调用
+python3 large_models/llm_demo.py
+
+# Semantic understanding 语义理解
+python3 large_models/llm_nlu_demo.py
+
+# Emotional perception 情绪感知
+python3 large_models/llm_er_demo.py
+
+# Voice wake-up 语音唤醒
+python3 large_models/wakeup_demo.py
+
+# Speech recognition 语音识别
+python3 large_models/asr_demo.py
+
+# Speech synthesis 语音合成
+python3 large_models/tts_demo.py
+
+# Voice interaction 语音交互
+python3 large_models/voice_interaction_demo.py
+
+# Vision language model invocation 视觉大模型调用
+python3 large_models/vllm_understand.py
+
+# Object Recognition in the application of Vision language Models 视觉大模型应用之目标识别
+PYTHON3 large_models/vllm_detect_demo.py
+
+# Scene Understanding in the Application of Vision language Models 视觉大模型应用之场景理解
+Python3 large_models/vllm_understand.py
+
+# Text recognition in the application of Vision language Models 视觉大模型应用之文字识别
+python3 large_models/python3 vllm_ocr.py
+
+# Voice control of multimodal models 多模态大模型之语音控制
+ros2 launch  large_models_examples llm_control_servo.launch.py
+
+# Color block Sorting of multimodal models 多模态大模型之色块分拣
+ros2 launch  large_models_examples llm_object_sorting.launch.py
+
+# Waste classification of multimodal models 多模态大模型之垃圾分拣
+ros2 launch  large_models_examples  llm_waste_classification.launch.py
+
+# Three-dimensional object sorting of multimodal models 多模态大模型之三维物品分拣
+ros2 launch  large_models_examples llm_3d_object_sorting.launch.py
+
+# Real-time detection of embodied intelligent applications 具身智能应用之实时检测
+ros2 launch  large_models_examples vllm_with_camera.launch.py
+
+# Visual tracking for embodied intelligence applications 具身智能应用之视觉追踪
+ros2 launch  large_models_examples vllm_track.launch.py
+
+# Intelligent handling for embodied intelligence applications 具身智能应用之智能搬运
+ros2 launch  large_models_examples vllm_object_transport.launch.py
+
+# Intelligent smart home assistant for embodied intelligent applications 具身智能应用之智能管家
+ros2 launch  large_models_examples vllm_dietitianl.launch.py
+
+####################JetArm robotic arm + slide rail Combined course JetArm机械臂+滑轨结合课程####################
+# Color block sorting 色块分拣
+ros2 launch stepper color_sorting.launch.py 
+
+# Waste classification 垃圾分类
+ros2 launch stepper waste_classification.launch.py 
+
+# Tag sorting 标签分拣
+roslaunch stepper apriltag_sorting_stepper.launch
+
+####################JetArm+ microwheel chassis control JetArm+麦轮底盘控制####################
+
+# Target tracking 目标追踪
+ros2 launch chassis object_tracking.launch.py
+# Click on the target that needs to be tracked and enter the instruction to start the tracking service. 点击需要追踪的目标,输入指令开始追踪服务
+ros2 service call /object_tracking/set_running std_srvs/srv/SetBool "{data: true}"
+# Stop the feature 停止玩法
+ros2 service call /object_tracking/set_running std_srvs/srv/SetBool "{data: false}"
+
+# Line following driving  巡线行驶
+ros2 launch chassis line_following_node.launch.py 
+# Click on the line following target and enter the instruction to start the line following service. 点击巡线目标,输入指令开始巡线服务
+ros2 service call /line_following/set_running std_srvs/srv/SetBool "{data: true}"
+# Stop the feature 停止玩法
+ros2 service call /line_following/set_running std_srvs/srv/SetBool "{data: false}"
+
+####################JetArm+传送带控制####################
+# Color block sorting 色块分拣
+ros2 launch motor color_sorting.launch.py
+# After the gameplay is launched, click on the camera screen window and press 'a' to start sorting. Press 's' to stop sorting. 玩法启动完成后，点击摄像头画面窗口，按‘a’开始分拣；按‘s’停止分拣。
+

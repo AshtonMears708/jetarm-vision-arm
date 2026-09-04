@@ -1,0 +1,19 @@
+# Model weights — large binaries, hardware specific
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Datasets
+KaggleUtensilDataset/
+datasets/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+venv/
+.venv/
+
+# macOS
+.DS_Store
