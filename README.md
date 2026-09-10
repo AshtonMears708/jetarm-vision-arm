@@ -5,7 +5,7 @@ A vision-guided robotic arm that takes its instruction from what you hold up to 
 Show the arm a **fork**, and it finds and picks up the **red** block. Show it a **knife**, it
 picks the **green** one. A **spoon** gets the **blue** one. The object you present is the command.
 
-Built on a HiWonder JetArm (Jetson Orin Nano 8GB) under ROS 2 Humble.
+Built on a HiWonder JetArm (Jetson Orin Nano 8GB) under ROS 2.
 
 ---
 
@@ -22,11 +22,13 @@ resulting class maps to a target color.
 **Stage 2 — find and grasp the target.**
 The arm returns to its table-facing home pose and segments the scene for the target color:
 
-1. `get_top_surface()` isolates block faces — adaptive Gaussian thresholding AND-ed with
-   L2-gradient Canny edges, then morphological dilation, so only flat top surfaces survive.
+1. `get_top_surface()` isolates block faces. L2-gradient Canny edges are dilated and then
+   inverted, and that mask is AND-ed with an adaptive Gaussian threshold — so any pixel near an
+   edge is excluded and only flat interior surfaces survive.
 2. The masked frame converts to **LAB color space**, which separates chroma from luminance and
    holds up far better than RGB under changing room light.
-3. `decide_pick_order()` selects the largest matching contour as the most confident detection.
+3. `decide_pick_order()` selects the largest matching detection by bounding-box area, treating
+   size as a proxy for confidence.
 4. `pixel_to_world()` converts image coordinates to arm coordinates.
 5. The world position goes to the arm's inverse-kinematics service
    (`kinematics/set_pose_target`) for approach, descent, grasp, lift, and place.
@@ -51,7 +53,7 @@ for approach versus descent, producing sudden elbow and wrist flips mid-motion. 
 
 **The wrist-roll servo is deliberately omitted from the transit pose.**
 Commanding all five servos while carrying a block would reset the gripper roll and drop or
-reorient whatever was held. The transit pose commands servos 1-4 only.
+reorient whatever was held. The transit pose commands servos 1–4 only.
 
 **Threading.** Arm motion blocks. Camera intake cannot. The node runs on a ROS 2
 `MultiThreadedExecutor` with reentrant callback groups and a frame queue.
@@ -70,7 +72,7 @@ custom model performed worse, so the stock weights ship in `src/cv_control.py`. 
 notebook is kept in `ml/` because the negative result is part of the work.
 
 A separate fruit classifier was trained by transfer learning on the public Fruits-360 dataset
-(3 classes, 224x224, torchvision backbone, rotation/flip/color-jitter augmentation) and deployed
+(3 classes, 224×224, torchvision backbone, rotation/flip/color-jitter augmentation) and deployed
 to the Jetson as TorchScript. See `ml/fruit-classifier-transfer-learning.ipynb`.
 
 ---
@@ -80,7 +82,7 @@ to the Jetson as TorchScript. See `ml/fruit-classifier-transfer-learning.ipynb`.
 ```
 src/          Final system. cv_control.py is the main ROS 2 node.
               arm_api.py, jetarm_control.py, cv_pipeline.py are supporting modules.
-experiments/  Earlier iterations, kept for history. Colour-only sorting, the fruit
+experiments/  Earlier iterations, kept for history. Color-only sorting, the fruit
               variant, and the standalone pick-and-place test.
 ml/           Model training notebooks (Kaggle, GPU).
 docs/         HiWonder's ROS 2 launch-command reference for this arm (vendor documentation,
@@ -105,4 +107,4 @@ Model weights are not committed — they are large binaries and hardware specifi
 ## Credits
 
 Team project at Western Carolina University, spring 2026.
-Built with **Wyatt** and **Kai Maggard**.
+Built with **Wyatt** and **Kai**.
