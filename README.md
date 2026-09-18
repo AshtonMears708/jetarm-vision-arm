@@ -66,10 +66,28 @@ The pick-and-place loop works end to end: utensil recognized, correct color sele
 located, grasped, and placed at the mapped drop position.
 
 **The custom-trained classifier lost to the stock one.** A YOLO classification model was trained
-on a hand-collected 927-image utensil dataset (312 forks, 245 knives, 370 spoons, all
-photographed for this project). Benchmarked against stock YOLOv11 weights in live testing, the
-custom model performed worse, so the stock weights ship in `src/cv_control.py`. The training
-notebook is kept in `ml/` because the negative result is part of the work.
+on a hand-collected 927-image utensil dataset, all photographed for this project. Benchmarked
+against stock YOLOv11 weights in live testing, the custom model performed worse, so the stock
+weights ship in `src/cv_control.py`. The training notebook is kept in `ml/` because the negative
+result is part of the work.
+
+**Auditing the dataset explained the negative result.** A later audit of the 927 images turned up
+two problems that together account for most of the gap:
+
+1. *A misfiled capture session.* All 81 images in `IMG_5697`–`IMG_5777` were forks sitting in the
+   spoon class — 8.7% of the dataset, and 22% of everything labeled "spoon." Corrected class
+   counts are **393 forks, 245 knives, 289 spoons** (the original figures of 312/245/370 were
+   wrong). Found by cross-validating a silhouette-shape classifier over the images and then
+   reviewing the disagreements and a random sample by hand; the filenames group into eight
+   contiguous capture sessions, and one had been dropped into the wrong folder.
+2. *Background–class leakage.* Each class was shot in its own setting, so the background alone
+   nearly gives away the label. A classifier trained on border pixels only — every utensil pixel
+   excluded — reaches **79% accuracy against a 40% baseline**. A model trained on this data can
+   score well by learning the table rather than the utensil, then degrade in live testing where
+   the background is the robot's actual workspace. That is exactly the failure that was observed.
+
+The corrected labels ship with the dataset. Any retrain should split by capture session rather
+than at random, so train and validation folds do not share a background.
 
 A separate fruit classifier was trained by transfer learning on the public Fruits-360 dataset
 (3 classes, 224×224, torchvision backbone, rotation/flip/color-jitter augmentation) and deployed
