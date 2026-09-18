@@ -89,6 +89,10 @@ two problems that together account for most of the gap:
 The corrected labels ship with the dataset. Any retrain should split by capture session rather
 than at random, so train and validation folds do not share a background.
 
+The corrected dataset is published on Kaggle:
+**[Plastic Utensils: Fork, Knife, Spoon (927 images)](https://www.kaggle.com/datasets/ashtonmears/kaggleutensildataset3)**
+(CC BY 4.0, 393 forks / 245 knives / 289 spoons, one folder per class).
+
 A separate fruit classifier was trained by transfer learning on the public Fruits-360 dataset
 (3 classes, 224×224, torchvision backbone, rotation/flip/color-jitter augmentation) and deployed
 to the Jetson as TorchScript. See `ml/fruit-classifier-transfer-learning.ipynb`.
